@@ -1,4 +1,4 @@
-%META:TOPICINFO{author="PeterThoeny" date="1022193900" format="1.0" version="1.2"}%
+%META:TOPICINFO{author="ProjectContributor" date="1022193900" format="1.0" version="1.2"}%
 %META:TOPICPARENT{name="GaugePlugin"}%
 *Tests for GaugePlugin*
 
@@ -138,6 +138,3 @@
 %TABLE{ sort="off" tableborder="1" cellpadding="1" cellspacing="1" headerbg="#99CCCC" databg="#C8CB8F,#DBDDB5" }% 
 | *Try an invalid =type= gauge* ||
 | %GAUGE{ type="bad" value="1" }% | type="bad" value="1" |
-
--- Main.TaitCyrus - 20 May 2002 <br />
--- Main.PeterThoeny - 20 May 2002

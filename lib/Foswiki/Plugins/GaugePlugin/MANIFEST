@@ -1,0 +1,8 @@
+data/System/GaugePlugin.txt Plugin Documentation
+data/System/GaugePluginTests.txt Tests for Plugin
+lib/Foswiki/Plugins/GaugePlugin.pm Perl Module
+pub/System/GaugePlugin/tambar1.gif Example Image
+pub/System/GaugePlugin/trenddn.gif Example Image
+pub/System/GaugePlugin/trendeq.gif Example Image
+pub/System/GaugePlugin/trendnd.gif Example Image
+pub/System/GaugePlugin/trendup.gif Example Image
