@@ -2,7 +2,7 @@
 ---+!! !GaugePlugin
 <!--
 One line description, required for extensions repository catalog.
-   * Set SHORTDESCRIPTION = Build dashboards that contain graphical images of gauges defined with =%<nop>GAUGE{}%= variables.
+   * Set SHORTDESCRIPTION = %$SHORTDESCRIPTION%
 -->
 %SHORTDESCRIPTION%
 

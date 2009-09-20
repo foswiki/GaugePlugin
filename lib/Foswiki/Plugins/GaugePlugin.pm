@@ -43,7 +43,7 @@ use vars qw(
 our $VERSION = '$Rev$';
 our $RELEASE = '1.0';
 our $SHORTDESCRIPTION =
-'Build dashboards that contain graphical images of gauges defined with =%<nop>GAUGE{}%= variables.';
+'Build dashboards that contain graphical images of gauges defined with =%<nop>GAUGE%= macros.';
 our $NO_PREFS_IN_TOPIC = 1;
 our $pluginName        = 'GaugePlugin';
 
