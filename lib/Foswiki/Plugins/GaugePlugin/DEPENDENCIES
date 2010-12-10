@@ -1,4 +1,4 @@
 # Dependencies for the GaugePlugin
 GD,>0,cpan,Required
-libdg,>0,C,Required. GD Library Available from http://www.libgd.org/
+libgd,>0,C,Required. GD Library Available from http://www.libgd.org/
 libpng,>1.2.3,C,Required. PNG Library. Available from http://www.libpng.org/pub/png/libpng.html
