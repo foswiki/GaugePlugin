@@ -26,9 +26,9 @@ The =%<nop>GAUGE{...}%= variable gets expanded to an image representing the gaug
 
 ---++ Plugin Settings
 
-Plugin settings are stored as preferences values. To change the setting you need to overwrite them in %WIKIPREFSTOPIC%. Changing them here will have no effect! This allows you to upgrade the plugin without having worry about loosing your settings.
+Plugin settings are stored as preferences values. You can override the defaults for these preferences in %LOCALSITEPREFS%, the <nolink>%WEBPREFSTOPIC%</nolink> topic of the current web, or in individual topics that use the plugin.  *Changing them here will have no effect!* This allows you to upgrade the plugin without having to worry about losing your settings.
 
-	* Set DEBUG to 1 to get debug messages in =data/debug.txt=.  Default: =0=
+	* Set DEBUG to 1 to get debug messages in the debug log file.  Default: =0=
 		* Set GAUGEPLUGIN_DEBUG = 0
 
 	* Default gauge used: =tambar=, =trend=. Default: =tambar=
@@ -66,6 +66,8 @@ The =%<nop>GAUGE{...}%= variable gets expanded to an image representing the gaug
 
 The "if installed" column shows images instead of variables in case the plugin is installed correctly.
 
+More examples can be found at %SYSTEMWEB%.GaugePluginTests.
+
 ---++ Output
 
 	* A PNG graphics file is created containing the gauge results.  The file is placed in =%<nop>PUBURLPATH%/%<nop>WEB%/%<nop>TOPIC%/_GaugePlugin_&lt;type&gt;_&lt;name&gt;.png=
@@ -79,31 +81,29 @@ If the required parameters are not defined, then an error message is returned or
 
 %$INSTALL_INSTRUCTIONS%
 
----++ Plugin Files
-
-   | *File:* | *Description:* |
-%$MANIFEST%
+Check %SYSTEMWEB%.GaugePluginTests to verify the plugin is installed and working correctly.
 
 ---++ Plugin Info
 
 |  Plugin Author(s): | Foswiki:Main.AndrewJones |
 |  Previous Author(s): | TWiki:Main.PeterThoeny, TWiki:Main.TaitCyrus |
-|  Copyright: | &copy; 2009, Andrew Jones, &copy; 2002 - 2006, Peter Thoeny |
+|  Copyright: | &copy; 2009 - 2011, Andrew Jones, &copy; 2002 - 2006, Peter Thoeny |
 |  License: | [[http://www.gnu.org/licenses/gpl.html][GPL (Gnu General Public License)]] |
 |  Plugin Release: | %$RELEASE% |
 |  Plugin Version: | %$VERSION% |
 |  Change History: | <!-- versions below in reverse order -->&nbsp; |
-|  18 Mar 2009  | Foswiki:Tasks.Item1254 - New 1.0 release for Foswiki - Foswiki:Main.AndrewJones |
+|  04 May 2011: | Foswiki:Tasks.Item8544: Incorrect reference to WIKIPREFSTOPIC in documentation; Foswiki:Tasks.Item9928: fix umask; Foswiki:Tasks.Item8545: Links to GaugePluginTests; Code clean-up, using official API's - Foswiki:Main.AndrewJones |
+|  18 Mar 2009: | Foswiki:Tasks.Item1254 - New 1.0 release for Foswiki - Foswiki:Main.AndrewJones |
 |  01 May 2003: | Added time stamp to image to prevent browser from caching images; ignore non-numerical chars in value parameter; fixed warnings |
 |  08 Sep 2002: | Added missing binmode (for Windows); pass parameters also to error image |
 |  23 May 2002: | Initial version |
 |  16 May 2002: | Initial spec |
 |  Dependencies: | %$DEPENDENCIES% |
-|  Plugin Home: | http://foswiki.org/Extensions/%TOPIC% |
+|  Home: | http://foswiki.org/Extensions/%TOPIC% |
 |  Support: | http://foswiki.org/Support/%TOPIC% |
 
 
-__Related Topics:__ %SYSTEMWEB%.DefaultPreferences, %USERSWEB%.SitePreferences, [[%SYSTEMWEB%.Plugins][Plugins]]
+__Related Topics:__ %SYSTEMWEB%.GaugePluginTests, %SYSTEMWEB%.DefaultPreferences, %USERSWEB%.SitePreferences, [[%SYSTEMWEB%.Plugins][Plugins]]
 
 %META:FILEATTACHMENT{name="tambar1.gif" attr="h" comment="Target Measure Bar, 60x16 example" date="1021945424" path="tambar1.gif" size="932" user="ProjectContributor" version="1.1"}%
 %META:FILEATTACHMENT{name="trendup.gif" attr="h" comment="Trend Up Icon 16x16" date="1021945466" path="trendup.gif" size="877" user="ProjectContributor" version="1.1"}%

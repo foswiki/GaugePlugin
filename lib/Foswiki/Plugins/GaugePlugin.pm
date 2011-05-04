@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# Copyright (C) 2009 Andrew Jones, andrewjones86@gmail.com
+# Copyright (C) 2009-2011 Andrew Jones, http://andrew-jones.com
 # Copyright (C) 2002-2006 Peter Thoeny, peter@thoeny.org
 #
 # For licensing info read LICENSE file in the Foswiki root.
@@ -29,19 +29,19 @@
 package Foswiki::Plugins::GaugePlugin;
 
 use strict;
+use warnings;
 
 # =========================
 use vars qw(
-  $installWeb $VERSION $RELEASE $debug
+  $debug
   $pluginInitialized $perlGDModuleFound
   $defaultType $defaultColors
   $defaultTambarScale $defaultTambarWidth $defaultTambarHeight
   $defaultTrendWidth $defaultTrendHeight
-  $SHORTDESCRIPTION $NO_PREFS_IN_TOPIC $pluginName
 );
 
 our $VERSION = '$Rev$';
-our $RELEASE = '1.0';
+our $RELEASE = '1.1';
 our $SHORTDESCRIPTION =
 'Build dashboards that contain graphical images of gauges defined with =%<nop>GAUGE%= macros.';
 our $NO_PREFS_IN_TOPIC = 1;
@@ -52,14 +52,16 @@ $perlGDModuleFound = 0;
 
 # =========================
 sub initPlugin {
-    ( my $topic, my $web, my $user, $installWeb ) = @_;
+    my ( $topic, $web, $user, $installWeb ) = @_;
 
     # Get plugin debug flag
-    $debug = &Foswiki::Func::getPluginPreferencesFlag("DEBUG") || 0;
+    $debug = Foswiki::Func::getPluginPreferencesFlag("DEBUG") || 0;
 
-    &Foswiki::Func::writeDebug(
+    Foswiki::Func::writeDebug(
         "- Foswiki::Plugins::GaugePlugin::initPlugin($web.$topic) is OK")
       if $debug;
+
+    Foswiki::Func::registerTagHandler( 'GAUGE', \&_make_gauge );
 
     # Mark that we are not fully initialized yet.  Only get the default
     # values from the plugin topic page iff a GAUGE is found in a topic
@@ -78,25 +80,25 @@ sub _init_defaults {
     };
 
     # Get default gauge type
-    $defaultType = &Foswiki::Func::getPluginPreferencesValue("TYPE")
+    $defaultType = Foswiki::Func::getPluginPreferencesValue("TYPE")
       || 'tambar';
 
     # Get 'tambar' default values
     $defaultTambarScale =
-      &Foswiki::Func::getPluginPreferencesValue("TAMBAR_SCALE")
+      Foswiki::Func::getPluginPreferencesValue("TAMBAR_SCALE")
       || "0, 10, 20, 30";
     $defaultTambarWidth =
-      &Foswiki::Func::getPluginPreferencesValue("TAMBAR_WIDTH") || 60;
+      Foswiki::Func::getPluginPreferencesValue("TAMBAR_WIDTH") || 60;
     $defaultTambarHeight =
-      &Foswiki::Func::getPluginPreferencesValue("TAMBAR_HEIGHT") || 16;
-    $defaultColors = &Foswiki::Func::getPluginPreferencesValue("TAMBAR_COLORS")
+      Foswiki::Func::getPluginPreferencesValue("TAMBAR_HEIGHT") || 16;
+    $defaultColors = Foswiki::Func::getPluginPreferencesValue("TAMBAR_COLORS")
       || "#FF0000 #FFCCCC #FFFF00 #FFFFCC #00FF00 #CCFFCC";
 
     # Get 'trend' default values
-    $defaultTrendWidth =
-      &Foswiki::Func::getPluginPreferencesValue("TREND_WIDTH") || 16;
+    $defaultTrendWidth = Foswiki::Func::getPluginPreferencesValue("TREND_WIDTH")
+      || 16;
     $defaultTrendHeight =
-      &Foswiki::Func::getPluginPreferencesValue("TREND_HEIGHT") || 16;
+      Foswiki::Func::getPluginPreferencesValue("TREND_HEIGHT") || 16;
 }
 
 # Return the maximum value of the two specified numbers.
@@ -124,58 +126,6 @@ sub _convert_color {
     $green = hex($2);
     $blue  = hex($3);
     return ( $red, $green, $blue );
-}
-
-# Parse the parameter list returning a hash of all found parameters
-sub _parse_parameters {
-    my ($args) = @_;
-    my %args;
-    my $length = length($args);
-    my ( $char, @field );
-
-    # First break the args into individual parameters
-    my $in_quote = 0;
-    my $field    = "";
-    my $index    = 0;
-    for ( my $i = 0 ; $i < $length ; $i++ ) {
-
-        # Get character
-        $char = substr( $args, $i, 1 );
-        if ( $char eq '"' ) {
-            if ($in_quote) {    # If a " and already in a quote, then the end
-                $in_quote = 0;
-            }
-            else {              # Beginning of quoted field
-                $in_quote = 1;
-            }
-        }
-        else {
-            if ( $char =~ /[,\s]+/ ) {  # A field separater only if not in quote
-                if ($in_quote) {
-                    $field .= $char;
-                }
-                else {
-                    $field[ $index++ ] = $field if ( $field ne "" );
-                    $field = "";
-                }
-            }
-            else {
-                $field .= $char;
-            }
-        }
-    }
-
-    # Deal with last field
-    $field[ $index++ ] = $field if ( $field ne "" );
-
-    # Now break each parameter into a key=value pair.
-    for ( my $i = 0 ; $i < $index ; $i++ ) {
-        my ( $key, $value ) = split( /=/, $field[$i] );
-
-        #print "field[$i] = [$field[$i]]\n";
-        $args{$key} = $value;
-    }
-    return %args;
 }
 
 # Return the value for the specified Foswiki plugin parameter.  If the
@@ -214,7 +164,7 @@ sub _make_filename {
     # If the top level "pub/$web" directory doesn't exist, create it.
     my $dir = Foswiki::Func::getPubDir() . "/$web";
     if ( !-e "$dir" ) {
-        umask(002);
+        umask( oct(777) - $Foswiki::cfg{RCS}{dirPermission} );
         mkdir( $dir, 0775 );
     }
 
@@ -222,7 +172,7 @@ sub _make_filename {
     # it.
     my $tempPath = "$dir/$topic";
     if ( !-e "$tempPath" ) {
-        umask(002);
+        umask( oct(777) - $Foswiki::cfg{RCS}{dirPermission} );
         mkdir( $tempPath, 0775 );
     }
 
@@ -274,7 +224,7 @@ sub _make_error_image {
     $im->rectangle( 0, 0, $width - 1, $height - 1, $black );
 
     # Write image file.
-    umask(002);
+    umask( oct(777) - $Foswiki::cfg{RCS}{dirPermission} );
     open( IMAGE, ">$dir/$filename" )
       || return _make_error "Can't create '$dir/$filename': $!";
     binmode IMAGE;
@@ -325,16 +275,15 @@ sub _make_poly_box {
 
 # Make a gauge.  Determine the type so we know what to do.
 sub _make_gauge {
-    my ( $args, $topic, $web ) = @_;
+    my ( $sesstion, $parameters, $topic, $web, $topicObject ) = @_;
     _init_defaults() if ( !$pluginInitialized );
 
     # If the GD module was found, then create an error image.
     if ($perlGDModuleFound) {
-        my %parameters = _parse_parameters($args);
-        my ($type) = _get_parameter( "type", $defaultType, \%parameters );
-        return _make_tambar_gauge( $topic, $web, \%parameters )
+        my ($type) = _get_parameter( "type", $defaultType, $parameters );
+        return _make_tambar_gauge( $topic, $web, $parameters )
           if ( $type eq "tambar" );
-        return _make_trend_gauge( $topic, $web, \%parameters )
+        return _make_trend_gauge( $topic, $web, $parameters )
           if ( $type eq "trend" );
         return _make_error("Unknown gauge type '$type'");
     }
@@ -513,8 +462,10 @@ sub _make_tambar_gauge {
     $im->rectangle( 0, 0, $tambar_width - 1, $tambar_height - 1, $black );
 
     # Create the file.
-    umask(002);
-    open( IMAGE, ">$dir/$filename" )
+    Foswiki::Func::writeDebug("$pluginName: creating image at $dir/$filename")
+      if $debug;
+    umask( oct(777) - $Foswiki::cfg{RCS}{dirPermission} );
+    open( IMAGE, ">", "$dir/$filename" )
       || return _make_error "Can't create '$dir/$filename': $!";
     binmode IMAGE;
     if ( $GD::VERSION > 1.19 ) {
@@ -524,6 +475,8 @@ sub _make_tambar_gauge {
         print IMAGE $im->gif;
     }
     close IMAGE;
+    Foswiki::Func::writeDebug("$pluginName: image created OK")
+      if $debug;
 
     # Make a unique value to append to the image name that forces a web
     # browser to reload the image each time the image is viewed.  This is
@@ -588,44 +541,8 @@ sub _make_trend_gauge {
     }
     my $timestamp = time();
     return
-        "<img src=\"%PUBURL%/$installWeb/GaugePlugin/$filename?t=$timestamp\""
+        "<img src=\"%PUBURL%/%SYSTEMWEB%/GaugePlugin/$filename?t=$timestamp\""
       . " width=\"$trend_width\" height=\"$trend_height\" alt=\"$alt\" $options />";
-}
-
-# The following is really for debugging and timing purposes and is not an
-# advertised interface.  This routine basically creates a number of tambar
-# gauges and (roughly) times how long it took to create them.
-# Usage: %GAUGE_TIMER{###}%
-# where ### is the number of gauges to create.
-sub _timeit {
-    my ( $loops, $topic, $web ) = @_;
-    my $start_time = time();
-    my $ret;
-    for ( my $i = 0 ; $i < $loops ; $i++ ) {
-        my $str = "name=\"timeit_$i\" value=\"8\"";
-        $ret = _make_gauge( $str, $topic, $web );
-    }
-    my $finish_time = time();
-    my $diff        = $finish_time - $start_time;
-
-    # Remove the just created test files.
-    for ( my $i = 0 ; $i < $loops ; $i++ ) {
-        my ( $dir, $filename ) =
-          _make_filename( "tambar", "timeit_$i", $topic, $web );
-        unlink("$dir/$filename");
-    }
-    return "To make $loops gauges it (roughly) took $diff seconds.";
-}
-
-# =========================
-sub commonTagsHandler {
-### my ( $text ) = @_;   # do not uncomment, use $_[0] instead
-    my $topic = $_[1];
-    my $web   = $_[2];
-
-#_#    &Foswiki::Func::writeDebug( "- Foswiki::Plugins::GaugePlugin [$_[0]]") if $debug;
-    $_[0] =~ s/%GAUGE{(.*?)}%/&_make_gauge($1, $topic, $web)/eog;
-    $_[0] =~ s/%GAUGE_TIMER{(.*)}%/&_timeit($1, $topic, $web)/eog;
 }
 
 1;
