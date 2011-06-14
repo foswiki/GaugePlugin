@@ -41,7 +41,7 @@ use vars qw(
 );
 
 our $VERSION = '$Rev$';
-our $RELEASE = '1.1';
+our $RELEASE = '1.2';
 our $SHORTDESCRIPTION =
 'Build dashboards that contain graphical images of gauges defined with =%<nop>GAUGE%= macros.';
 our $NO_PREFS_IN_TOPIC = 1;
@@ -268,7 +268,7 @@ sub _make_poly_box {
     $poly->addPt( $x2, $y2 );
     $poly->addPt( $x1, $y2 );
     $poly->offset( -$left, $yoffset );
-    $poly->scale( $xscale, 1 );
+    $poly->scale( $xscale, 1, 0, 0 );
     my @b = $poly->bounds;
     return $poly;
 }
@@ -489,6 +489,7 @@ sub _make_tambar_gauge {
     # Get remaining parameters and pass to <img ... />
     my $options = "";
     foreach my $k ( keys %$parameters ) {
+	next if $k =~ /^_/;
         $options .= "$k=\"$$parameters{$k}\" ";
     }
     return "<img src=\"%ATTACHURL%/$filename?t=$timestamp\" alt=\"$alt\""

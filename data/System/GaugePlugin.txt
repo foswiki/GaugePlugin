@@ -92,6 +92,7 @@ Check %SYSTEMWEB%.GaugePluginTests to verify the plugin is installed and working
 |  Plugin Release: | %$RELEASE% |
 |  Plugin Version: | %$VERSION% |
 |  Change History: | <!-- versions below in reverse order -->&nbsp; |
+|  14 Jun 2011: | Foswiki:Tasks.Item10778: added extra params need by some versions of GD. Foswiki:Tasks.Item10879: Fixed bad parameters to image tag - Foswiki:Main.CrawfordCurrie |
 |  04 May 2011: | Foswiki:Tasks.Item8544: Incorrect reference to WIKIPREFSTOPIC in documentation; Foswiki:Tasks.Item9928: fix umask; Foswiki:Tasks.Item8545: Links to GaugePluginTests; Code clean-up, using official API's - Foswiki:Main.AndrewJones |
 |  18 Mar 2009: | Foswiki:Tasks.Item1254 - New 1.0 release for Foswiki - Foswiki:Main.AndrewJones |
 |  01 May 2003: | Added time stamp to image to prevent browser from caching images; ignore non-numerical chars in value parameter; fixed warnings |
