@@ -262,7 +262,7 @@ sub _make_poly_box {
     # Clip the x values so they stay inside of gauge.
     $x1 = _max( $x1, $left );
     $x2 = _min( $x2, $right );
-    my $xscale = ( $width / ( $right - $left ) );
+    my $xscale = ( $right - $left == 0 ) ? $width : ( $width / ( $right - $left ) );
     my $poly = new GD::Polygon;
     $poly->addPt( $x1, $y1 );
     $poly->addPt( $x2, $y1 );
@@ -429,7 +429,7 @@ sub _make_tambar_gauge {
     # amount to add to value is calculated as a percentage since the amount
     # to add will vary depending on how width the scale actually is
     # compared to the actual width (in pixels) of the image.
-    my $values_per_pixel = ( $tambar_right - $tambar_left ) / $tambar_width;
+    my $values_per_pixel = $tambar_width == 0 ? ($tambar_right-$tambar_left) : ( $tambar_right - $tambar_left ) / $tambar_width;
     my $v =
       _max( $value, $tambar_left + POSIX::ceil( $values_per_pixel + 0.5 ) );
 
